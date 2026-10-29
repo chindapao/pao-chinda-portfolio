@@ -1,6 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { FEATURED_PROJECTS, PROJECTS } from "./projects";
+import { getFeaturedProjects, getProfile, getProject, getRoles } from "./index";
+import { PROJECTS_KM, ROLES_KM } from "./km";
+import { PROFILE } from "./profile";
+import { PROJECTS } from "./projects";
+import { ROLES, visibleRoles } from "./roles";
 import { getTech, STACK } from "./stack";
 import { visibleTestimonials } from "./testimonials";
 
@@ -14,7 +18,7 @@ describe("projects", () => {
   });
 
   it("feature exactly three on the home page", () => {
-    expect(FEATURED_PROJECTS).toHaveLength(3);
+    expect(getFeaturedProjects("en")).toHaveLength(3);
   });
 
   it("only reference known technologies", () => {
@@ -27,27 +31,69 @@ describe("projects", () => {
       expect(project.architecture.layers.length).toBeGreaterThan(0);
     }
   });
-});
 
-describe("stack", () => {
-  it("has unique ids", () => {
-    const ids = STACK.map((tech) => tech.id);
-    expect(new Set(ids).size).toBe(ids.length);
+  it("serve screenshots that exist in public/", async () => {
+    const { existsSync } = await import("node:fs");
+    for (const project of PROJECTS) {
+      for (const shot of project.screenshots ?? []) expect(existsSync(`public${shot.src}`), shot.src).toBe(true);
+    }
   });
 });
 
-describe("testimonials", () => {
+describe("profile", () => {
+  it("claims exactly as many systems as the site documents", () => {
+    expect(PROFILE.stats[0]?.value).toBe(String(PROJECTS.length));
+  });
+});
+
+describe("Khmer content", () => {
+  it("translates every project, with one outcome label per outcome", () => {
+    for (const project of PROJECTS) {
+      const km = PROJECTS_KM[project.slug];
+      expect(km, project.slug).toBeDefined();
+      expect(km!.outcomeLabels).toHaveLength(project.outcomes.length);
+      expect(km!.achievements).toHaveLength(project.achievements.length);
+    }
+  });
+
+  it("translates every role", () => {
+    for (const role of ROLES) expect(ROLES_KM[role.organization], role.organization).toBeDefined();
+  });
+
+  it("falls back to English for untranslated case-study detail", () => {
+    const km = getProject("cvkh", "km")!;
+    expect(km.tagline).not.toBe(getProject("cvkh", "en")!.tagline);
+    expect(km.features).toEqual(getProject("cvkh", "en")!.features);
+  });
+
+  it("localizes the profile", () => {
+    expect(getProfile("km").headline).not.toBe(getProfile("en").headline);
+    expect(getProfile("km").name).toBe(getProfile("en").name);
+  });
+});
+
+describe("drafts", () => {
   afterEach(() => vi.unstubAllEnvs());
 
-  it("never show drafts in a production build", () => {
+  it("never show draft testimonials or roles in a production build", () => {
     vi.stubEnv("NODE_ENV", "production");
     vi.stubEnv("VERCEL_ENV", "production");
     expect(visibleTestimonials().every((testimonial) => !testimonial.draft)).toBe(true);
+    expect(visibleRoles().every((role) => !role.draft)).toBe(true);
+    expect(getRoles("km").every((role) => !role.draft)).toBe(true);
   });
 
   it("show drafts on preview deployments", () => {
     vi.stubEnv("NODE_ENV", "production");
     vi.stubEnv("VERCEL_ENV", "preview");
     expect(visibleTestimonials().some((testimonial) => testimonial.draft)).toBe(true);
+    expect(visibleRoles().some((role) => role.draft)).toBe(true);
+  });
+});
+
+describe("stack", () => {
+  it("has unique ids", () => {
+    const ids = STACK.map((tech) => tech.id);
+    expect(new Set(ids).size).toBe(ids.length);
   });
 });

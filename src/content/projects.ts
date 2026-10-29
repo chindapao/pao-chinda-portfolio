@@ -108,6 +108,13 @@ export const PROJECTS: Project[] = [
       "Encrypted all CV content at rest and kept it out of logs and admin views",
     ],
     mockup: "builder",
+    // Real screens from the running app, sample personas only (captured 2026-10-29).
+    screenshots: [
+      { src: "/projects/cvkh/builder.webp", alt: "CVKH builder: section editor on the left, live A4 preview on the right", width: 1440, height: 900 },
+      { src: "/projects/cvkh/templates.webp", alt: "CVKH template gallery with filters by career field, job title and design", width: 1440, height: 900 },
+      { src: "/projects/cvkh/home.webp", alt: "CVKH landing page in English", width: 1440, height: 900 },
+      { src: "/projects/cvkh/home-km.webp", alt: "CVKH landing page in Khmer", width: 1440, height: 900 },
+    ],
   },
   {
     slug: "weloan365",
@@ -472,11 +479,4 @@ export const PROJECTS: Project[] = [
   },
 ];
 
-export const FEATURED_PROJECTS = PROJECTS.filter((project) => project.featured);
-
-export function getProject(slug: string): Project | undefined {
-  return PROJECTS.find((project) => project.slug === slug);
-}
-
-/** Newest first, for the journey timeline. */
-export const PROJECTS_BY_DATE = [...PROJECTS].sort((a, b) => b.period.start.localeCompare(a.period.start));
+// Locale-aware getters (getProjects, getProject, …) live in `src/content/index.ts`.

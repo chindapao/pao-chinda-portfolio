@@ -1,3 +1,4 @@
+import { visibleOnly } from "@/lib/drafts";
 import type { Testimonial } from "@/types";
 
 /*
@@ -28,12 +29,6 @@ export const TESTIMONIALS: Testimonial[] = [
   },
 ];
 
-/** Drafts are visible in `next dev` and on Vercel preview deployments — never in a production build. */
-export function isDraftVisible(): boolean {
-  return process.env.NODE_ENV === "development" || process.env.VERCEL_ENV === "preview";
-}
-
 export function visibleTestimonials(): Testimonial[] {
-  const showDrafts = isDraftVisible();
-  return TESTIMONIALS.filter((testimonial) => showDrafts || !testimonial.draft);
+  return visibleOnly(TESTIMONIALS);
 }

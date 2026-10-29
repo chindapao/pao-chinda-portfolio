@@ -6,19 +6,21 @@ import { Journey } from "@/components/sections/journey";
 import { OpenSource } from "@/components/sections/open-source";
 import { TechStack } from "@/components/sections/tech-stack";
 import { Testimonials } from "@/components/sections/testimonials";
+import { localeOf } from "@/lib/seo";
 
 /** Recruiter path: who + availability (hero) → proof (projects) → depth (journey, stack) → person → contact. */
-export default function HomePage() {
+export default async function HomePage({ params }: PageProps<"/[locale]">) {
+  const locale = await localeOf(params);
   return (
     <>
-      <Hero />
-      <FeaturedProjects />
-      <Journey />
-      <TechStack />
-      <About />
-      <OpenSource />
-      <Testimonials />
-      <ContactCta />
+      <Hero locale={locale} />
+      <FeaturedProjects locale={locale} />
+      <Journey locale={locale} />
+      <TechStack locale={locale} />
+      <About locale={locale} />
+      <OpenSource locale={locale} />
+      <Testimonials locale={locale} />
+      <ContactCta locale={locale} />
     </>
   );
 }

@@ -32,12 +32,12 @@ export const PROFILE: Profile = {
     { title: "Proven, not promised", body: "Testcontainers, concurrency tests and CI gates before anything ships." },
     { title: "Khmer-first, worldwide", body: "Bilingual UIs that render Khmer script correctly — on screen and on paper." },
   ],
-  // CONFIRM: years and project count. GitHub account since 2020; 7 systems are documented on this site.
+  // Only claims the site itself proves. CONFIRM: add `{ value: "N+ yrs", label: "experience" }` once you've confirmed N.
   stats: [
-    { value: "5+ yrs", label: "experience" },
-    { value: "30+", label: "projects" },
-    { value: "OSS", label: "contributor" },
-    { value: "Remote", label: "friendly" },
+    { value: "7", label: "systems on this site" },
+    { value: "Spring + Next", label: "full-stack" },
+    { value: "km / en", label: "bilingual products" },
+    { value: "Remote", label: "friendly · UTC+7" },
   ],
   heroPills: ["Next.js", "Spring Boot", "TypeScript", "PostgreSQL", "AWS"],
   socials: {
@@ -46,14 +46,15 @@ export const PROFILE: Profile = {
     linkedin: undefined,
     x: undefined,
   },
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://pao-chinda-portfolio.vercel.app",
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://pchinda.vercel.app",
 };
 
+/** Main navigation: locale-less paths (see `localePath`) and the `messages.nav` key of each label. */
 export const NAV_LINKS = [
-  { href: "/#projects", label: "Projects" },
-  { href: "/#stack", label: "Stack" },
-  { href: "/#about", label: "About" },
-  { href: "/contact", label: "Contact" },
+  { path: "/", hash: "projects", label: "projects" },
+  { path: "/", hash: "stack", label: "stack" },
+  { path: "/", hash: "about", label: "about" },
+  { path: "/contact", label: "contact" },
 ] as const;
 
 /** Fixed so prerendering stays deterministic (Cache Components forbids `new Date()` outside a cache scope). */

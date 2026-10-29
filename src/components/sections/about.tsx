@@ -4,8 +4,9 @@ import Link from "next/link";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { Container, SectionHeading } from "@/components/section-heading";
 import { Button } from "@/components/ui/button";
-import { PROFILE } from "@/content/profile";
+import { getProfile } from "@/content";
 import { PROJECTS } from "@/content/projects";
+import { getMessages, type Locale, localePath } from "@/i18n";
 
 /** Abstract "workspace" visual: a commit-activity grid plus an editor pane, drawn in CSS (no image to load). */
 function WorkspaceVisual() {
@@ -54,20 +55,22 @@ function WorkspaceVisual() {
   );
 }
 
-export function About() {
+export function About({ locale }: { locale: Locale }) {
+  const profile = getProfile(locale);
+  const m = getMessages(locale);
   return (
-    <section id="about" aria-labelledby="about-title" className="overflow-hidden border-y border-border bg-surface/30 py-20 sm:py-28">
+    <section id="about" aria-labelledby="about-title" className="overflow-hidden border-y border-border bg-surface/30 py-20 sm:py-28 defer-render">
       <Container className="grid grid-cols-[minmax(0,1fr)] items-center gap-14 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
         <div className="flex flex-col gap-8">
-          <SectionHeading id="about-title" eyebrow="04 · about" title="Senior where it counts: the boring, critical parts." />
+          <SectionHeading id="about-title" eyebrow={m.about.eyebrow} title={m.about.title} />
           <Reveal className="flex flex-col gap-4 text-base leading-relaxed font-light text-muted-foreground sm:text-lg">
-            {PROFILE.bio.map((paragraph) => (
+            {profile.bio.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
           </Reveal>
 
           <Stagger as="ul" className="grid gap-3 sm:grid-cols-2">
-            {PROFILE.approach.map((item) => (
+            {profile.approach.map((item) => (
               <StaggerItem as="li" key={item.title} className="rounded-lg border border-border bg-surface p-4">
                 <p className="font-mono text-xs font-medium text-primary">{item.title}</p>
                 <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{item.body}</p>
@@ -76,17 +79,16 @@ export function About() {
           </Stagger>
 
           <Reveal className="flex flex-col gap-6">
-            <ul aria-label="At a glance" className="flex flex-wrap gap-2">
-              {PROFILE.stats.map((stat) => (
+            <ul aria-label={m.about.glance} className="flex flex-wrap gap-2">
+              {profile.stats.map((stat) => (
                 <li key={stat.label} className="rounded-full border border-border-strong bg-surface px-3.5 py-1.5 font-mono text-xs">
-                  <span className="font-medium text-primary">{stat.value}</span>{" "}
-                  <span className="text-muted-foreground">{stat.label}</span>
+                  <span className="font-medium text-primary">{stat.value}</span> <span className="text-muted-foreground">{stat.label}</span>
                 </li>
               ))}
             </ul>
             <Button asChild variant="outline" className="self-start">
-              <Link href="/about">
-                More about how I work <ArrowRight aria-hidden="true" />
+              <Link href={localePath(locale, "/about")}>
+                {m.about.more} <ArrowRight aria-hidden="true" />
               </Link>
             </Button>
           </Reveal>

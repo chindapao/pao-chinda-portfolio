@@ -20,11 +20,12 @@ const TONE: Record<ArchLayer["tone"], { dot: string; ring: string; label: string
 
 export function ArchitectureDiagram({
   architecture,
-  title,
+  label,
   compact = false,
 }: {
   architecture: Architecture;
-  title: string;
+  /** Accessible name of the diagram, e.g. "CVKH architecture, 4 layers". */
+  label: string;
   /** Card size: no notes, tighter boxes. */
   compact?: boolean;
 }) {
@@ -33,7 +34,7 @@ export function ArchitectureDiagram({
     <figure className="flex flex-col gap-5">
       <div
         role="list"
-        aria-label={`${title} architecture, ${layers.length} layers`}
+        aria-label={label}
         className={cn("flex flex-col items-stretch gap-2 md:flex-row md:items-center", compact ? "md:gap-1.5" : "md:gap-2.5")}
       >
         {layers.map((layer, index) => {
