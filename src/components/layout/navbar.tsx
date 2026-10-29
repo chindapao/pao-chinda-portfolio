@@ -69,7 +69,8 @@ export function Navbar() {
           </span>
         </Link>
 
-        <ul className="hidden items-center gap-1 md:flex">
+        {/* Full links from lg: at 768 px they plus the language switch and "Hire me" overflow on wider-measuring fonts. */}
+        <ul className="hidden items-center gap-1 lg:flex">
           {links.map((link, index) => (
             <li key={link.href} className="flex items-center">
               {index > 0 ? (
@@ -101,7 +102,7 @@ export function Navbar() {
 
           <Dialog.Root open={open} onOpenChange={setOpen}>
             <Dialog.Trigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden" aria-label={m.nav.openMenu}>
+              <Button variant="ghost" size="icon" className="lg:hidden" aria-label={m.nav.openMenu}>
                 <Menu aria-hidden="true" className="!size-5" />
               </Button>
             </Dialog.Trigger>
