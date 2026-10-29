@@ -15,7 +15,7 @@ architecture diagrams and a tech-stack matrix, built on Next.js and deployed on 
 | Email | Resend | Simple API, works from a Vercel function |
 | Data | GitHub REST (+ GraphQL for contributions) | Cached for an hour with `cacheLife("hours")` |
 | Tests | Vitest | Validation, rate limiting, content integrity |
-| Hosting | Vercel (+ Analytics, Speed Insights) | Preview per PR, production on `main` |
+| Hosting | Vercel (+ Analytics, Speed Insights) | Preview per PR, production on `sit` |
 
 ## Structure
 
@@ -70,19 +70,30 @@ pnpm dev                      # http://localhost:3000
 Secrets are read only in `src/lib/env.ts`, which imports `server-only`: importing it from a client component is a
 build error, so keys cannot reach the browser.
 
+## Branches
+
+| Branch | Role | Deploys to |
+|---|---|---|
+| `dev` | Development (default branch). Feature branches open pull requests into `dev`. | Vercel preview |
+| `sit` | Deploy branch. Merge `dev` into `sit` to release. | Vercel production |
+
+```
+feature/* ──PR──► dev ──PR / merge──► sit ──► production
+```
+
+The `CI` workflow (lint, typecheck, tests, build) runs on every pull request and on every push to `dev` and `sit`.
+
 ## Deployment (GitHub + Vercel)
 
-1. Create the GitHub repository and push:
-   ```bash
-   gh repo create pao-chinda-portfolio --public --source . --remote origin --push
-   ```
-2. On [vercel.com/new](https://vercel.com/new), import `pao-chinda-portfolio`. The framework (Next.js) and pnpm are
+The repository is [chindapao/pao-chinda-portfolio](https://github.com/chindapao/pao-chinda-portfolio).
+
+1. On [vercel.com/new](https://vercel.com/new), import `pao-chinda-portfolio`. The framework (Next.js) and pnpm are
    detected automatically. No build settings to change.
+2. **Settings → Git → Production Branch**: set it to `sit`. Every other branch and pull request gets its own
+   preview URL.
 3. In **Settings → Environment Variables**, add the variables above for **Production**, **Preview** and
    **Development** (`vercel env pull .env.local` then syncs them locally).
-4. **Settings → Git**: the production branch is `main`. Every pull request gets its own preview URL, and the
-   GitHub Actions `CI` workflow runs lint, typecheck, tests and build on the same PR.
-5. Optional: add a custom domain in **Settings → Domains**, then update `NEXT_PUBLIC_SITE_URL`.
+4. Optional: add a custom domain in **Settings → Domains**, then update `NEXT_PUBLIC_SITE_URL`.
 
 ## Security
 
