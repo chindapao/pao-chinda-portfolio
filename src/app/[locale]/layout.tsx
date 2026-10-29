@@ -3,7 +3,8 @@ import "../globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
-import { JetBrains_Mono, Kantumruy_Pro, Sora } from "next/font/google";
+import { JetBrains_Mono, Sora } from "next/font/google";
+import { preload } from "react-dom";
 
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
@@ -17,9 +18,10 @@ import { alternates, localeOf } from "@/lib/seo";
 // All three are variable fonts: one file per family covers every weight (listing weights would download one file each).
 const sora = Sora({ subsets: ["latin"], variable: "--font-sora", display: "swap" });
 const jetbrains = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains", display: "swap" });
-// Sora has no Khmer glyphs: the browser falls through to Kantumruy Pro for Khmer text only (unicode-range). Not preloaded,
-// so English pages never download it.
-const kantumruy = Kantumruy_Pro({ subsets: ["khmer"], variable: "--font-kantumruy", display: "swap", preload: false });
+// Khmer: Kantumruy Pro is self-hosted in public/fonts (OFL) with its own @font-face in globals.css, because next/font can
+// only preload a font on every route or on none. It is preloaded on Khmer pages only (see below): English pages never
+// need it up front, and Khmer pages don't shift when it arrives.
+const KHMER_FONT = "/fonts/kantumruy-pro-khmer.woff2";
 
 export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }));
@@ -63,6 +65,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   const locale = await localeOf(params);
   const profile = getProfile(locale);
   const m = getMessages(locale);
+  if (locale === "km") preload(KHMER_FONT, { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
 
   /** schema.org Person: helps search engines connect the name, role and profiles. */
   const personJsonLd = {
@@ -77,7 +80,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   };
 
   return (
-    <html lang={HTML_LANG[locale]} className={`${sora.variable} ${jetbrains.variable} ${kantumruy.variable}`}>
+    <html lang={HTML_LANG[locale]} className={`${sora.variable} ${jetbrains.variable}`}>
       <body className="flex min-h-dvh flex-col">
         <a
           href="#main"

@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+/* Kantumruy Pro, Khmer glyphs only (SIL OFL 1.1, see public/fonts/kantumruy-pro-OFL.txt). Preloaded on /km pages. */
+@font-face {
+  font-family: "Kantumruy Pro";
+  font-style: normal;
+  font-weight: 100 700;
+  font-display: swap;
+  src: url("/fonts/kantumruy-pro-khmer.woff2") format("woff2");
+  unicode-range: U+1780-17FF, U+19E0-19FF, U+200C-200D, U+25CC;
+}
+
 /*
  * Design tokens. Values are HSL triplets so they compose with alpha (`hsl(var(--primary) / 0.2)`).
  * Every colour in the UI comes from here — components never use raw palette classes or hex values.
@@ -29,7 +39,7 @@
   --syntax-comment: 0 0% 58%;
 
   /* Kantumruy Pro after each Latin face: Khmer glyphs fall through to it (Sora and JetBrains Mono have none). */
-  --mono: var(--font-jetbrains), "JetBrains Mono", var(--font-kantumruy), ui-monospace, monospace;
+  --mono: var(--font-jetbrains), "JetBrains Mono", "Kantumruy Pro", ui-monospace, monospace;
   --radius: 0.75rem;
 }
 
@@ -53,7 +63,7 @@
   --color-syntax-literal: hsl(var(--syntax-literal));
   --color-syntax-comment: hsl(var(--syntax-comment));
 
-  --font-sans: var(--font-sora), var(--font-kantumruy), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-sora), "Kantumruy Pro", ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--mono);
 
   --radius-sm: calc(var(--radius) - 4px);
