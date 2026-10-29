@@ -106,11 +106,13 @@ test.describe("contact", () => {
     await expect(page.getByText("Thanks — your message is in my inbox.")).toBeVisible();
   });
 
-  test("the API re-validates and rejects cross-site posts", async ({ request }) => {
-    const invalid = await request.post("/api/contact", { data: { name: "x", email: "bad", message: "short" } });
+  test("the API re-validates and rejects cross-site posts", async ({ request }, testInfo) => {
+    // Own rate-limit bucket per run (the limiter keys on the client IP; on Vercel the platform sets this header).
+    const headers = { "x-real-ip": `e2e-${testInfo.project.name}-${Date.now()}` };
+    const invalid = await request.post("/api/contact", { headers, data: { name: "x", email: "bad", message: "short" } });
     expect(invalid.status()).toBe(422);
     expect((await invalid.json()).fieldErrors.email).toEqual(["emailInvalid"]);
-    const crossSite = await request.post("/api/contact", { headers: { origin: "https://evil.example" }, data: {} });
+    const crossSite = await request.post("/api/contact", { headers: { ...headers, origin: "https://evil.example" }, data: {} });
     expect(crossSite.status()).toBe(403);
   });
 });

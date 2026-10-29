@@ -6,7 +6,7 @@ import { revealAll } from "./helpers";
  * Responsive layout audit (the CVKH process): a matrix of widths × pages, each checked for the problems that break
  * layouts on real devices. Runs once (desktop project): the viewport width is what matters here.
  */
-const WIDTHS = [320, 375, 768, 1024, 1440, 2560];
+const WIDTHS = [320, 375, 768, 820, 1024, 1440, 2560];
 const PAGES = ["/en", "/km", "/en/projects", "/en/projects/cvkh", "/km/projects/weloan365", "/en/contact"];
 
 /** Every layout problem on the page, as readable strings (empty = clean). */
@@ -67,16 +67,17 @@ function auditLayout(page: Page) {
 }
 
 test.describe("responsive layout", () => {
+  // One short test per width × page: parallel-friendly, and a failure names exactly where the layout broke.
   for (const width of WIDTHS) {
-    test(`${width}px: no overflow, readable text, usable targets`, async ({ page }, testInfo) => {
-      test.skip(testInfo.project.name !== "desktop", "viewport-driven: runs once, in the desktop project");
-      await page.setViewportSize({ width, height: width >= 1920 ? 1080 : 900 });
-      await page.emulateMedia({ reducedMotion: "reduce" });
-      for (const path of PAGES) {
+    for (const path of PAGES) {
+      test(`${path} at ${width}px`, async ({ page }, testInfo) => {
+        test.skip(testInfo.project.name !== "desktop", "viewport-driven: runs once, in the desktop project");
+        await page.setViewportSize({ width, height: width >= 1920 ? 1080 : 900 });
+        await page.emulateMedia({ reducedMotion: "reduce" });
         await page.goto(path);
         await revealAll(page);
-        expect(await auditLayout(page), `${path} at ${width}px`).toEqual([]);
-      }
-    });
+        expect(await auditLayout(page)).toEqual([]);
+      });
+    }
   }
 });
