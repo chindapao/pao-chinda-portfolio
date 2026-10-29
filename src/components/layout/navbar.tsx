@@ -61,9 +61,10 @@ export function Navbar() {
       )}
     >
       <nav aria-label={m.nav.main} className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-        <Link href={href("/")} className={cn("group flex items-center gap-2.5 rounded-md", focusRing)}>
-          <span className="text-[0.95rem] font-bold tracking-tight">{PROFILE.name}</span>
-          <span className="rounded border border-primary/30 bg-primary/10 px-1.5 py-0.5 font-mono text-[0.65rem] font-medium text-primary transition-colors group-hover:bg-primary/20">
+        <Link href={href("/")} className={cn("group flex min-h-10 items-center gap-2.5 rounded-md", focusRing)}>
+          <span className="text-[0.95rem] font-bold tracking-tight whitespace-nowrap">{PROFILE.name}</span>
+          {/* Below 380 px the tag no longer fits beside the language switch and menu button. */}
+          <span className="hidden rounded border border-primary/30 bg-primary/10 px-1.5 py-0.5 font-mono text-[0.7rem] font-medium whitespace-nowrap text-primary transition-colors group-hover:bg-primary/20 min-[380px]:inline">
             {PROFILE.shortRole}
           </span>
         </Link>

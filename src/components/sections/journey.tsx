@@ -63,7 +63,7 @@ export function Journey({ locale }: { locale: Locale }) {
                       <h4 className="text-lg font-bold">
                         {role.title} <span className="font-normal text-muted-foreground">· {role.organization}</span>
                       </h4>
-                      {role.draft ? <span className="font-mono text-[0.65rem] text-syntax-literal">{m.common.draft}</span> : null}
+                      {role.draft ? <span className="font-mono text-[0.7rem] text-syntax-literal">{m.common.draft}</span> : null}
                     </div>
                     <p className="text-sm leading-relaxed text-muted-foreground">{role.summary}</p>
                     {role.projects.length ? (
@@ -97,7 +97,7 @@ export function Journey({ locale }: { locale: Locale }) {
 
                 <div className="flex flex-row flex-wrap items-center gap-2 md:flex-col md:items-start">
                   <p className="font-mono text-xs text-muted-foreground">{formatPeriod(m, project.period)}</p>
-                  <span className={cn("rounded-md border px-1.5 py-0.5 font-mono text-[0.65rem]", STATUS_CLASS[project.status])}>
+                  <span className={cn("rounded-md border px-1.5 py-0.5 font-mono text-[0.7rem]", STATUS_CLASS[project.status])}>
                     {m.journey.status[project.status]}
                   </span>
                 </div>

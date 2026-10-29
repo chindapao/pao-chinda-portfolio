@@ -76,7 +76,9 @@ GitHub Actions (`.github/workflows/ci.yml`) runs on every pull request and every
 1. **check** — lint, typecheck, unit tests (content integrity, validation, rate limit, locale routing), build.
 2. **browser** — Playwright on desktop and a 360 px phone, English and Khmer: navigation, language switch, 404s,
    terminal, mobile menu (focus trap, Escape), contact form (client validation, stubbed submit) and API guards; **axe
-   WCAG 2.1 AA audits on 10 pages with zero violations allowed**, plus a no-horizontal-scroll check. Then the
+   WCAG 2.1 AA audits on 10 pages with zero violations allowed**, and a **responsive layout audit** at 320, 375, 768,
+   1024, 1440 and 2560 px (`e2e/responsive.spec.ts`): no sideways scroll, nothing escaping the viewport, no text
+   overflowing its box, no text under 11 px, tap targets ≥ 24 px (WCAG 2.5.8), and a one-row navbar. Then the
    **Lighthouse budget** (desktop, gating): performance ≥ 90, accessibility 100, best practices ≥ 95, SEO 100,
    LCP ≤ 2 s, CLS ≤ 0.05. A mobile Lighthouse run is reported but does not gate (simulated slow-4G scores vary by
    runner); accessibility and CLS still gate there.

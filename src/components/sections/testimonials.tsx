@@ -21,7 +21,7 @@ export function Testimonials({ locale }: { locale: Locale }) {
             <StaggerItem as="li" key={testimonial.quote}>
               <figure className="glow-card relative flex h-full flex-col gap-5 rounded-xl border border-t-2 border-border border-t-primary bg-surface p-6">
                 {testimonial.draft ? (
-                  <span className="absolute top-3 right-3 rounded border border-syntax-literal/40 bg-syntax-literal/10 px-1.5 py-0.5 font-mono text-[0.6rem] text-syntax-literal">
+                  <span className="absolute top-3 right-3 rounded border border-syntax-literal/40 bg-syntax-literal/10 px-1.5 py-0.5 font-mono text-[0.7rem] text-syntax-literal">
                     {m.common.draft}
                   </span>
                 ) : null}

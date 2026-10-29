@@ -38,50 +38,57 @@ async function OpenSourceContent({ m }: { m: Messages }) {
     </Button>
   );
 
+  const privateNote = (
+    <Card className="flex w-full max-w-2xl flex-col items-center gap-3 p-8 text-center">
+      <span className="flex size-11 items-center justify-center rounded-xl border border-border bg-surface-raised text-primary">
+        <FolderLock aria-hidden="true" className="size-5" />
+      </span>
+      <p className="text-lg font-semibold">{m.openSource.privateTitle}</p>
+      <p className="max-w-md text-sm leading-relaxed text-muted-foreground">{stats ? m.openSource.privateBody : m.openSource.unavailableBody}</p>
+    </Card>
+  );
+
   // No data, or nothing public yet: say so plainly instead of showing a row of zeros.
   if (!stats || stats.publicRepos === 0) {
     return (
-      <div className="flex w-full max-w-2xl flex-col items-center gap-6">
-        <Card className="flex w-full flex-col items-center gap-3 p-8 text-center">
-          <span className="flex size-11 items-center justify-center rounded-xl border border-border bg-surface-raised text-primary">
-            <FolderLock aria-hidden="true" className="size-5" />
-          </span>
-          <p className="text-lg font-semibold">{m.openSource.privateTitle}</p>
-          <p className="max-w-md text-sm leading-relaxed text-muted-foreground">{stats ? m.openSource.privateBody : m.openSource.unavailableBody}</p>
-        </Card>
+      <div className="flex w-full flex-col items-center gap-6">
+        {privateNote}
         {profileButton}
       </div>
     );
   }
 
+  // Only numbers worth showing: a "0 stars" card says less than no card.
   const cards = [
-    { label: m.openSource.stars, value: formatCount(stats.stars), icon: Star },
-    { label: m.openSource.repos, value: formatCount(stats.publicRepos), icon: GitFork },
-    {
-      label: m.openSource.contributions,
-      value: stats.contributionsThisYear === null ? "—" : formatCount(stats.contributionsThisYear),
-      icon: GitHubIcon,
-    },
-  ];
+    { label: m.openSource.stars, value: stats.stars, icon: Star },
+    { label: m.openSource.repos, value: stats.publicRepos, icon: GitFork },
+    { label: m.openSource.contributions, value: stats.contributionsThisYear ?? 0, icon: GitHubIcon },
+  ].filter((card) => card.value > 0);
+  // With only a couple of public repos, keep the context that most work is private.
+  const showStats = stats.stars > 0 || stats.publicRepos >= 3;
 
   return (
     <div className="flex w-full flex-col items-center gap-10">
-      <Stagger as="ul" className="grid w-full max-w-3xl gap-3 sm:grid-cols-3">
-        {cards.map(({ label, value, icon: Icon }) => (
-          <StaggerItem as="li" key={label}>
-            <Card glow className="flex flex-col items-center gap-1 p-6 text-center">
-              <Icon aria-hidden="true" className="mb-2 size-5 text-primary" />
-              <span className="font-mono text-3xl font-medium">{value}</span>
-              <span className="text-sm text-muted-foreground">{label}</span>
-            </Card>
-          </StaggerItem>
-        ))}
-      </Stagger>
+      {showStats ? null : privateNote}
+      {showStats && cards.length ? (
+        <Stagger as="ul" className={cn("grid w-full max-w-3xl gap-3", cards.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2")}>
+          {cards.map(({ label, value, icon: Icon }) => (
+            <StaggerItem as="li" key={label}>
+              <Card glow className="flex flex-col items-center gap-1 p-6 text-center">
+                <Icon aria-hidden="true" className="mb-2 size-5 text-primary" />
+                <span className="font-mono text-3xl font-medium">{formatCount(value)}</span>
+                <span className="text-sm text-muted-foreground">{label}</span>
+              </Card>
+            </StaggerItem>
+          ))}
+        </Stagger>
+      ) : null}
 
+      {/* Centred and fixed-width, so one or two repos look intentional rather than left behind in a 3-column grid. */}
       {stats.topRepos.length ? (
-        <Stagger as="ul" className="grid w-full gap-3 md:grid-cols-3">
+        <Stagger as="ul" className="flex w-full flex-wrap justify-center gap-3">
           {stats.topRepos.map((repo) => (
-            <StaggerItem as="li" key={repo.name}>
+            <StaggerItem as="li" key={repo.name} className="w-full sm:w-[22rem]">
               <Card glow className="relative flex h-full flex-col gap-3 p-5">
                 <a
                   href={repo.htmlUrl}

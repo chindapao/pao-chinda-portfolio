@@ -79,7 +79,7 @@ export default async function ProjectPage({ params }: PageProps<"/[locale]/proje
         <Container className="flex flex-col gap-10">
           <Link
             href={localePath(locale, "/projects")}
-            className="inline-flex w-fit items-center gap-1.5 rounded font-mono text-xs text-muted-foreground hover:text-primary"
+            className="inline-flex min-h-8 w-fit items-center gap-1.5 rounded font-mono text-xs text-muted-foreground hover:text-primary"
           >
             <ArrowLeft aria-hidden="true" className="size-3.5" /> {m.project.back}
           </Link>

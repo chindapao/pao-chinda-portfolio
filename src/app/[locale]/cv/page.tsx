@@ -95,7 +95,7 @@ export default async function CvPage({ params }: PageProps<"/[locale]/cv">) {
                   <div className="flex flex-wrap items-baseline justify-between gap-x-4">
                     <h3 className="text-base font-bold tracking-tight">
                       {role.title} <span className="font-normal text-muted-foreground">— {role.organization}</span>
-                      {role.draft ? <span className="ml-2 font-mono text-[0.6rem] text-syntax-literal print:hidden">{m.common.draft}</span> : null}
+                      {role.draft ? <span className="ml-2 font-mono text-[0.7rem] text-syntax-literal print:hidden">{m.common.draft}</span> : null}
                     </h3>
                     <span className="font-mono text-xs text-muted-foreground">{formatPeriod(m, role.period)}</span>
                   </div>

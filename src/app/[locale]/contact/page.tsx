@@ -54,7 +54,7 @@ export default async function ContactPage({ params }: PageProps<"/[locale]/conta
               <span className={iconBox}>
                 <GitHubIcon className="size-4" />
               </span>
-              <a href={github} target="_blank" rel="noopener noreferrer" className="underline-offset-4 hover:text-primary hover:underline">
+              <a href={github} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-8 items-center underline-offset-4 hover:text-primary hover:underline">
                 {github.replace("https://", "")}
               </a>
             </li>

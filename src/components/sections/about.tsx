@@ -45,7 +45,7 @@ function WorkspaceVisual() {
           </p>
           <p className="text-muted-foreground">{"}"}</p>
         </div>
-        <div className="grid grid-cols-3 gap-2 font-mono text-[0.68rem] text-muted-foreground">
+        <div className="grid grid-cols-3 gap-2 font-mono text-[0.7rem] text-muted-foreground">
           <span className="rounded-md border border-border px-2 py-1.5">{PROJECTS.length} systems</span>
           <span className="rounded-md border border-border px-2 py-1.5">km / en</span>
           <span className="rounded-md border border-border px-2 py-1.5">UTC+7</span>

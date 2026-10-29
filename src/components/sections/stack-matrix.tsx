@@ -64,7 +64,7 @@ export function StackMatrix({ locale }: { locale: Locale }) {
                 <th
                   scope="colgroup"
                   colSpan={PROJECTS.length + 2}
-                  className="bg-surface-raised/60 px-4 py-1.5 text-left font-mono text-[0.68rem] font-medium tracking-widest text-primary uppercase"
+                  className="bg-surface-raised/60 px-4 py-1.5 text-left font-mono text-[0.7rem] font-medium tracking-widest text-primary uppercase"
                 >
                   {category.label}
                 </th>

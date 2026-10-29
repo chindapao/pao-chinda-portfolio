@@ -144,7 +144,7 @@ export function ProjectMockup({ project, className, priority = false }: { projec
         <span className="size-2 rounded-full bg-muted/60" />
         <span className="size-2 rounded-full bg-muted/60" />
         <span className="size-2 rounded-full bg-primary/70" />
-        <span className="ml-3 truncate font-mono text-[0.6rem] text-muted-foreground">{project.slug}.app</span>
+        <span className="ml-3 truncate font-mono text-[0.7rem] text-muted-foreground">{project.slug}.app</span>
       </div>
       {shot ? (
         <Image

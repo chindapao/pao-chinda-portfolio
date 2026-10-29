@@ -55,7 +55,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
       - run: pnpm exec playwright install --with-deps chromium
-      - name: Playwright (e2e + axe, desktop and 360 px phone, English and Khmer)
+      - name: Playwright (e2e, axe, responsive layout 320–2560 px; English and Khmer)
         run: pnpm test:e2e
       - name: Lighthouse budget (desktop, gating)
         run: pnpm exec lhci autorun

@@ -27,7 +27,7 @@ export function TechStack({ locale }: { locale: Locale }) {
                         <Icon aria-hidden="true" className="size-4" />
                       </span>
                       <span className="text-sm font-semibold">{name}</span>
-                      <span className="font-mono text-[0.68rem] leading-snug text-muted-foreground">{note}</span>
+                      <span className="font-mono text-[0.7rem] leading-snug text-muted-foreground">{note}</span>
                     </div>
                   </StaggerItem>
                 ))}
