@@ -2,11 +2,11 @@ import { ImageResponse } from "next/og";
 
 import { PROFILE } from "@/content/profile";
 
-export const alt = `${PROFILE.name} — ${PROFILE.role}`;
-export const size = { width: 1200, height: 630 };
-export const contentType = "image/png";
-
-/* OG images render outside the CSS pipeline, so the tokens are spelled out here (same values as globals.css). */
+/*
+ * The Open Graph / Twitter card image at /og, shared by both locales (link previews are mostly read in English, and the
+ * OG renderer has no Khmer font). Rendered outside the CSS pipeline, so the tokens are spelled out (same values as
+ * globals.css). No request data is read, so it is prerendered at build time.
+ */
 const BG = "hsl(0 0% 4%)";
 const SURFACE = "hsl(0 0% 7%)";
 const BORDER = "hsl(0 0% 16%)";
@@ -14,7 +14,7 @@ const FG = "hsl(0 0% 95%)";
 const MUTED = "hsl(0 0% 64%)";
 const GREEN = "hsl(142 72% 50%)";
 
-export default function OpengraphImage() {
+export function GET() {
   return new ImageResponse(
     (
       <div
@@ -52,6 +52,6 @@ export default function OpengraphImage() {
         </div>
       </div>
     ),
-    size,
+    { width: 1200, height: 630 },
   );
 }

@@ -1,90 +1,43 @@
-"use client";
-
-import { motion, type Variants } from "motion/react";
 import type * as React from "react";
 
 /*
- * Scroll-triggered fade-up. `whileInView` is Motion's IntersectionObserver; `once` stops re-animating on scroll back.
- * Reduced motion is handled globally by <MotionConfig reducedMotion="user"> in Providers (transforms are dropped,
- * opacity stays), so no component needs its own check.
+ * Scroll-triggered fade-up, without shipping a client component per element: these are server components that only
+ * mark elements with `data-reveal`; one <RevealObserver> (IntersectionObserver) per page flips `data-shown`, and the
+ * CSS in globals.css animates it. Children of a `Stagger` get nth-child delays.
+ *
+ * Content is never hidden before the observer is ready (and so never hidden without JavaScript), and the global
+ * reduced-motion rule turns the transition off.
  */
-
-const EASE = [0.16, 1, 0.3, 1] as const;
-
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE } },
-};
-
-const VIEWPORT = { once: true, margin: "0px 0px -12% 0px" } as const;
 
 type Tag = "div" | "section" | "ul" | "ol" | "li" | "article" | "header";
 
-/** One element that fades up when it scrolls into view. */
-export function Reveal({
-  as = "div",
-  delay = 0,
-  className,
-  children,
-}: {
+interface RevealProps {
   as?: Tag;
-  delay?: number;
   className?: string;
   children: React.ReactNode;
-}) {
-  const Component = motion[as];
+}
+
+/** One element that fades up when it scrolls into view. `delay` in seconds. */
+export function Reveal({ as: Component = "div", delay = 0, className, children }: RevealProps & { delay?: number }) {
   return (
-    <Component
-      className={className}
-      initial="hidden"
-      whileInView="visible"
-      viewport={VIEWPORT}
-      variants={fadeUp}
-      transition={{ delay }}
-    >
+    <Component data-reveal="" className={className} style={delay ? { transitionDelay: `${delay}s` } : undefined}>
       {children}
     </Component>
   );
 }
 
 /** A container whose `StaggerItem` children fade up one after another. */
-export function Stagger({
-  as = "div",
-  step = 0.08,
-  className,
-  children,
-}: {
-  as?: Tag;
-  step?: number;
-  className?: string;
-  children: React.ReactNode;
-}) {
-  const Component = motion[as];
+export function Stagger({ as: Component = "div", className, children }: RevealProps) {
   return (
-    <Component
-      className={className}
-      initial="hidden"
-      whileInView="visible"
-      viewport={VIEWPORT}
-      variants={{ hidden: {}, visible: { transition: { staggerChildren: step } } }}
-    >
+    <Component data-stagger="" className={className}>
       {children}
     </Component>
   );
 }
 
-export function StaggerItem({
-  as = "div",
-  className,
-  children,
-}: {
-  as?: Tag;
-  className?: string;
-  children: React.ReactNode;
-}) {
-  const Component = motion[as];
+export function StaggerItem({ as: Component = "div", className, children }: RevealProps) {
   return (
-    <Component className={className} variants={fadeUp}>
+    <Component data-reveal="" className={className}>
       {children}
     </Component>
   );

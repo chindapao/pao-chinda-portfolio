@@ -96,6 +96,20 @@ export interface Testimonial {
   draft: boolean;
 }
 
+/** A job or engagement in the career timeline (projects show the work; roles show where and when). */
+export interface Role {
+  organization: string;
+  title: string;
+  period: { start: string; end?: string };
+  /** City or "Remote". */
+  location: string;
+  summary: string;
+  /** `Project.slug`s done in this role. */
+  projects: string[];
+  /** Unconfirmed role or dates: shown with a DRAFT badge in dev / preview, hidden in production. */
+  draft: boolean;
+}
+
 export interface SocialLinks {
   github: string;
   linkedin?: string;

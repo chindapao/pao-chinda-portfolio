@@ -8,30 +8,26 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PROFILE } from "@/content/profile";
+import { getMessages, type Locale, type Messages } from "@/i18n";
 import { getGitHubStats, LANGUAGE_COLORS } from "@/lib/github";
 import { cn, focusRing, formatCount } from "@/lib/utils";
 
-export function OpenSource() {
+export function OpenSource({ locale }: { locale: Locale }) {
+  const m = getMessages(locale);
   return (
-    <section id="open-source" aria-labelledby="oss-title" className="py-20 sm:py-28">
+    <section id="open-source" aria-labelledby="oss-title" className="py-20 sm:py-28 defer-render">
       <Container className="flex flex-col items-center gap-12">
-        <SectionHeading
-          id="oss-title"
-          align="center"
-          eyebrow="05 · open source"
-          title="Building in public."
-          lede="Live from the GitHub API, refreshed every hour."
-        />
+        <SectionHeading id="oss-title" align="center" eyebrow={m.openSource.eyebrow} title={m.openSource.title} lede={m.openSource.lede} />
         {/* Streams in after the shell; the skeleton has the same size as the cards, so nothing shifts. */}
-        <Suspense fallback={<OpenSourceSkeleton />}>
-          <OpenSourceContent />
+        <Suspense fallback={<OpenSourceSkeleton label={m.openSource.loading} />}>
+          <OpenSourceContent m={m} />
         </Suspense>
       </Container>
     </section>
   );
 }
 
-async function OpenSourceContent() {
+async function OpenSourceContent({ m }: { m: Messages }) {
   const stats = await getGitHubStats();
   const profileButton = (
     <Button asChild variant="outline">
@@ -42,54 +38,57 @@ async function OpenSourceContent() {
     </Button>
   );
 
+  const privateNote = (
+    <Card className="flex w-full max-w-2xl flex-col items-center gap-3 p-8 text-center">
+      <span className="flex size-11 items-center justify-center rounded-xl border border-border bg-surface-raised text-primary">
+        <FolderLock aria-hidden="true" className="size-5" />
+      </span>
+      <p className="text-lg font-semibold">{m.openSource.privateTitle}</p>
+      <p className="max-w-md text-sm leading-relaxed text-muted-foreground">{stats ? m.openSource.privateBody : m.openSource.unavailableBody}</p>
+    </Card>
+  );
+
   // No data, or nothing public yet: say so plainly instead of showing a row of zeros.
   if (!stats || stats.publicRepos === 0) {
     return (
-      <div className="flex w-full max-w-2xl flex-col items-center gap-6">
-        <Card className="flex w-full flex-col items-center gap-3 p-8 text-center">
-          <span className="flex size-11 items-center justify-center rounded-xl border border-border bg-surface-raised text-primary">
-            <FolderLock aria-hidden="true" className="size-5" />
-          </span>
-          <p className="text-lg font-semibold">Most of my work lives in private client repositories.</p>
-          <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
-            {stats
-              ? "Public repositories are on the way. Until then, the case studies above walk through the architecture and decisions in detail — happy to do a code walkthrough on a call."
-              : "GitHub stats are taking a breather. The case studies above walk through the architecture and decisions in detail."}
-          </p>
-        </Card>
+      <div className="flex w-full flex-col items-center gap-6">
+        {privateNote}
         {profileButton}
       </div>
     );
   }
 
+  // Only numbers worth showing: a "0 stars" card says less than no card.
   const cards = [
-    { label: "Stars earned", value: formatCount(stats.stars), icon: Star },
-    { label: "Public repos", value: formatCount(stats.publicRepos), icon: GitFork },
-    {
-      label: "Contributions this year",
-      value: stats.contributionsThisYear === null ? "—" : formatCount(stats.contributionsThisYear),
-      icon: GitHubIcon,
-    },
-  ];
+    { label: m.openSource.stars, value: stats.stars, icon: Star },
+    { label: m.openSource.repos, value: stats.publicRepos, icon: GitFork },
+    { label: m.openSource.contributions, value: stats.contributionsThisYear ?? 0, icon: GitHubIcon },
+  ].filter((card) => card.value > 0);
+  // With only a couple of public repos, keep the context that most work is private.
+  const showStats = stats.stars > 0 || stats.publicRepos >= 3;
 
   return (
     <div className="flex w-full flex-col items-center gap-10">
-      <Stagger as="ul" className="grid w-full max-w-3xl gap-3 sm:grid-cols-3">
-        {cards.map(({ label, value, icon: Icon }) => (
-          <StaggerItem as="li" key={label}>
-            <Card glow className="flex flex-col items-center gap-1 p-6 text-center">
-              <Icon aria-hidden="true" className="mb-2 size-5 text-primary" />
-              <span className="font-mono text-3xl font-medium">{value}</span>
-              <span className="text-sm text-muted-foreground">{label}</span>
-            </Card>
-          </StaggerItem>
-        ))}
-      </Stagger>
+      {showStats ? null : privateNote}
+      {showStats && cards.length ? (
+        <Stagger as="ul" className={cn("grid w-full max-w-3xl gap-3", cards.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2")}>
+          {cards.map(({ label, value, icon: Icon }) => (
+            <StaggerItem as="li" key={label}>
+              <Card glow className="flex flex-col items-center gap-1 p-6 text-center">
+                <Icon aria-hidden="true" className="mb-2 size-5 text-primary" />
+                <span className="font-mono text-3xl font-medium">{formatCount(value)}</span>
+                <span className="text-sm text-muted-foreground">{label}</span>
+              </Card>
+            </StaggerItem>
+          ))}
+        </Stagger>
+      ) : null}
 
+      {/* Centred and fixed-width, so one or two repos look intentional rather than left behind in a 3-column grid. */}
       {stats.topRepos.length ? (
-        <Stagger as="ul" className="grid w-full gap-3 md:grid-cols-3">
+        <Stagger as="ul" className="flex w-full flex-wrap justify-center gap-3">
           {stats.topRepos.map((repo) => (
-            <StaggerItem as="li" key={repo.name}>
+            <StaggerItem as="li" key={repo.name} className="w-full sm:w-[22rem]">
               <Card glow className="relative flex h-full flex-col gap-3 p-5">
                 <a
                   href={repo.htmlUrl}
@@ -98,9 +97,8 @@ async function OpenSourceContent() {
                   className={cn("rounded font-mono text-sm font-medium after:absolute after:inset-0 hover:text-primary", focusRing)}
                 >
                   {repo.name}
-                  <span className="sr-only"> (opens in a new tab)</span>
                 </a>
-                <p className="line-clamp-2 flex-1 text-sm text-muted-foreground">{repo.description ?? "No description yet."}</p>
+                <p className="line-clamp-2 flex-1 text-sm text-muted-foreground">{repo.description ?? m.openSource.noDescription}</p>
                 <p className="flex items-center gap-4 font-mono text-xs text-muted-foreground">
                   {repo.language ? (
                     <span className="flex items-center gap-1.5">
@@ -114,7 +112,7 @@ async function OpenSourceContent() {
                   ) : null}
                   <span className="flex items-center gap-1">
                     <Star aria-hidden="true" className="size-3.5" /> {repo.stars}
-                    <span className="sr-only"> stars</span>
+                    <span className="sr-only"> {m.openSource.starsSr}</span>
                   </span>
                 </p>
               </Card>
@@ -128,9 +126,9 @@ async function OpenSourceContent() {
   );
 }
 
-function OpenSourceSkeleton() {
+function OpenSourceSkeleton({ label }: { label: string }) {
   return (
-    <div role="status" aria-label="Loading GitHub stats" className="flex w-full flex-col items-center gap-10">
+    <div role="status" aria-label={label} className="flex w-full flex-col items-center gap-10">
       <div className="grid w-full max-w-3xl gap-3 sm:grid-cols-3">
         {Array.from({ length: 3 }, (_, i) => (
           <Skeleton key={i} className="h-[9.5rem] rounded-xl" />

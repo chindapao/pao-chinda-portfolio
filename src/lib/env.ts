@@ -18,6 +18,11 @@ const serverEnvSchema = z.object({
 
 const empty = (value: string | undefined) => (value === "" ? undefined : value);
 
+/** True when the contact form can actually deliver email (both Resend values are set). */
+export function isContactConfigured(): boolean {
+  return Boolean(serverEnv.RESEND_API_KEY && serverEnv.CONTACT_EMAIL);
+}
+
 export const serverEnv = serverEnvSchema.parse({
   RESEND_API_KEY: empty(process.env.RESEND_API_KEY),
   CONTACT_EMAIL: empty(process.env.CONTACT_EMAIL),

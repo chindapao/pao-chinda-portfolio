@@ -1,10 +1,11 @@
 "use client";
 
 import { Terminal } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m as motion } from "motion/react";
 import { useState } from "react";
 
-import { FEATURED_PROJECTS, PROJECTS } from "@/content/projects";
+import { PROJECTS } from "@/content/projects";
+import { useI18n } from "@/i18n/client";
 import { cn, focusRing } from "@/lib/utils";
 
 /*
@@ -45,12 +46,12 @@ const COMMANDS: { id: string; label: string; output: Line[] }[] = [
     id: "ls",
     label: "ls projects/",
     output: [
-      ...FEATURED_PROJECTS.map((project): Line => [
+      ...PROJECTS.filter((project) => project.featured).map((project): Line => [
         { text: "★ ", kind: "literal" },
         { text: project.slug.padEnd(14) },
         { text: `# ${project.category.toLowerCase()}`, kind: "comment" },
       ]),
-      [{ text: `+ ${PROJECTS.length - FEATURED_PROJECTS.length} more in /projects`, kind: "comment" }],
+      [{ text: `+ ${PROJECTS.filter((project) => !project.featured).length} more in /projects`, kind: "comment" }],
     ],
   },
   {
@@ -75,6 +76,7 @@ const COMMANDS: { id: string; label: string; output: Line[] }[] = [
 ];
 
 export function HeroTerminal() {
+  const { m } = useI18n();
   const [active, setActive] = useState(COMMANDS[0]!.id);
   const command = COMMANDS.find((c) => c.id === active) ?? COMMANDS[0]!;
 
@@ -84,7 +86,7 @@ export function HeroTerminal() {
       {/* The soft green glow behind the window. */}
       <div aria-hidden="true" className="absolute -inset-6 -z-10 rounded-[2rem] bg-primary/15 blur-3xl" />
       <figure
-        aria-label="Interactive terminal"
+        aria-label={m.hero.terminal}
         className="overflow-hidden rounded-xl border border-border-strong bg-surface shadow-[0_30px_80px_-30px_hsl(var(--primary)/0.35)]"
       >
         <div className="flex items-center gap-2 border-b border-border bg-surface-raised px-4 py-3">
@@ -131,7 +133,7 @@ export function HeroTerminal() {
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-1.5 border-t border-border bg-surface-raised/60 px-3 py-3" role="group" aria-label="Run a command">
+        <div className="flex flex-wrap gap-1.5 border-t border-border bg-surface-raised/60 px-3 py-3" role="group" aria-label={m.hero.runCommand}>
           {COMMANDS.map((c) => (
             <button
               key={c.id}

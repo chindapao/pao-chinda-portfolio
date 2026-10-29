@@ -28,7 +28,8 @@
   --syntax-literal: 35 95% 65%;
   --syntax-comment: 0 0% 58%;
 
-  --mono: var(--font-jetbrains), "JetBrains Mono", ui-monospace, monospace;
+  /* Kantumruy Pro after each Latin face: Khmer glyphs fall through to it (Sora and JetBrains Mono have none). */
+  --mono: var(--font-jetbrains), "JetBrains Mono", var(--font-kantumruy), ui-monospace, monospace;
   --radius: 0.75rem;
 }
 
@@ -52,7 +53,7 @@
   --color-syntax-literal: hsl(var(--syntax-literal));
   --color-syntax-comment: hsl(var(--syntax-comment));
 
-  --font-sans: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-sora), var(--font-kantumruy), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--mono);
 
   --radius-sm: calc(var(--radius) - 4px);
@@ -80,13 +81,14 @@
       transform: translateY(-12px) rotate(0.4deg);
     }
   }
+  /* Opacity only: runs on the compositor (an animated box-shadow would repaint every frame). */
   @keyframes pulse-dot {
     0%,
     100% {
-      box-shadow: 0 0 0 0 hsl(var(--primary) / 0.55);
+      opacity: 1;
     }
     50% {
-      box-shadow: 0 0 0 6px hsl(var(--primary) / 0);
+      opacity: 0.35;
     }
   }
 }
@@ -136,6 +138,33 @@
     background-image: radial-gradient(hsl(var(--foreground) / 0.07) 1px, transparent 1px);
     background-size: 22px 22px;
   }
+  /*
+   * Below-the-fold sections: the browser skips style, layout and paint until they near the viewport (the biggest win
+   * on low-end phones). The intrinsic size is a placeholder height that the browser then remembers.
+   */
+  .defer-render {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 1200px;
+  }
+  /* Stack-matrix cell: a square drawn with ::before, filled when the project uses the tech. */
+  .matrix-cell {
+    padding: 0.5rem;
+    text-align: center;
+  }
+  .matrix-cell::before {
+    content: "";
+    display: block;
+    margin-inline: auto;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 0.2rem;
+    border: 1px solid var(--color-border);
+  }
+  .matrix-cell[data-used]::before {
+    border-color: transparent;
+    background: var(--color-primary);
+    box-shadow: 0 0 10px hsl(var(--primary) / 0.5);
+  }
   /* Any card that lights up with the green glow on hover / keyboard focus inside it. */
   .glow-card {
     transition:
@@ -148,6 +177,42 @@
     border-color: hsl(var(--primary) / 0.45);
     box-shadow: var(--shadow-glow);
   }
+}
+
+/*
+ * Scroll reveal (see components/motion/reveal.tsx). Hidden only once <RevealObserver> has run, so content is visible
+ * without JavaScript. Stagger children get 70 ms steps; the reduced-motion rule below removes the transition.
+ */
+html[data-reveal-ready] [data-reveal]:not([data-shown]) {
+  opacity: 0;
+  transform: translateY(24px);
+}
+[data-reveal] {
+  transition:
+    opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+[data-stagger] > [data-reveal]:nth-child(2) { transition-delay: 70ms; }
+[data-stagger] > [data-reveal]:nth-child(3) { transition-delay: 140ms; }
+[data-stagger] > [data-reveal]:nth-child(4) { transition-delay: 210ms; }
+[data-stagger] > [data-reveal]:nth-child(5) { transition-delay: 280ms; }
+[data-stagger] > [data-reveal]:nth-child(6) { transition-delay: 350ms; }
+[data-stagger] > [data-reveal]:nth-child(n + 7) { transition-delay: 420ms; }
+
+/*
+ * Khmer typography. Unlayered on purpose: these must beat the (layered) Tailwind utilities. Khmer stacks subscripts and
+ * vowels above and below the line, so tight display leading clips glyphs, and letter-spacing breaks clusters apart.
+ */
+:lang(km) :is(h1, h2, h3, h4) {
+  letter-spacing: 0;
+  line-height: 1.4;
+}
+:lang(km) [class*="tracking-"] {
+  letter-spacing: 0;
+}
+:lang(km) p,
+:lang(km) li {
+  line-height: 1.8;
 }
 
 @media (prefers-reduced-motion: reduce) {
